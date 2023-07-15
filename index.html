@@ -92,7 +92,7 @@
 
 <div class="content">
     <div id="abs">
-        <h1>Learning Joint Latent Space EBM Prior Model for Multi-layer Generator</h1>
+        <h1>Learning Hierarchical Features with Joint Latent Space Energy-Based Prior</h1>
         <div class="authors"><a href="mailto:jcui7@stevens.edu">Jiali Cui</a><sup>1</sup>, <a
                 href="mailto:ywu@stat.ucla.edu">Ying Nian Wu</a><sup>2</sup>, <a href="mailto:than6@stevens.edu">Tian
             Han</a><sup>1</sup>,
@@ -149,47 +149,34 @@
         </div>
 
         <h2>Abstract</h2>
-        <p> This paper studies the fundamental problem of learning multi-layer generator models. The multi-layer
-            generator model builds multiple layers of latent variables as a prior model on top of the generator, which
-            benefits learning complex data distribution and hierarchical representations. However, such a prior model
-            usually focuses on modeling inter-layer relations between latent variables by assuming non-informative
-            (conditional) Gaussian distributions, which can be limited in model expressivity. To tackle this issue and
-            learn more expressive prior models, we propose an energy-based model (EBM) on the joint latent space over
-            all layers of latent variables with the multi-layer generator as its backbone. Such joint latent space EBM
-            prior model captures the intra-layer contextual relations at each layer through layer-wise energy terms, and
-            latent variables across different layers are jointly corrected. We develop a joint training scheme via
-            maximum likelihood estimation (MLE), which involves Markov Chain Monte Carlo (MCMC) sampling for both prior
-            and posterior distributions of the latent variables from different layers. To ensure efficient inference and
-            learning, we further propose a variational training scheme where an inference model is used to amortize the
-            costly posterior MCMC sampling. Our experiments demonstrate that the learned model can be expressive in
-            generating high-quality images and capturing hierarchical features for better outlier detection.</p>
+        <p> This paper studies the fundamental problem of multi-layer generator models in learning hierarchical representations.
+            The multi-layer generator models that consist of multiple layers of latent variables organized in a top-down
+            architecture tend to learn multiple levels of data abstraction. However, such multi-layer latent variables are
+            typically parameterized to be Gaussian, which can be less informative in capturing complex abstractions,
+            resulting in limited success in hierarchical representation learning. In this paper, we propose to learn a
+            joint latent space EBM prior model for effective hierarchical representation learning. To ensure efficient
+            inference, we develop a variational joint training scheme where an inference model is seamlessly integrated
+            and jointly trained with the generator model. Our experiments demonstrate that the proposed joint EBM prior
+            is effective and expressive in capturing hierarchical representations and modelling complex data distribution.</p>
     </div>
-
+    Comming Soon
     <hr>
-    <pre class="bib">
-    @inproceedings{cui2023learning,
-      title={Learning Joint Latent Space EBM Prior Model for Multi-Layer Generator},
-      author={Cui, Jiali and Wu, Ying Nian and Han, Tian},
-      booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-      pages={3603--3612},
-      year={2023}
-    }
-    </pre>
+<!--    <pre class="bib">-->
+<!--    @inproceedings{cui2023learning,-->
+<!--      title={Learning Joint Latent Space EBM Prior Model for Multi-Layer Generator},-->
+<!--      author={Cui, Jiali and Wu, Ying Nian and Han, Tian},-->
+<!--      booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},-->
+<!--      pages={3603&#45;&#45;3612},-->
+<!--      year={2023}-->
+<!--    }-->
+<!--    </pre>-->
     <hr>
 
-    <div class="container">
-        <h2 class="title">Poster</h2>
-        <iframe src="static/pdfs/CVPR2023_Poster.pdf" width="100%" height="900"></iframe>
-    </div>
+<!--    <div class="container">-->
+<!--        <h2 class="title">Poster</h2>-->
+<!--        <iframe src="static/pdfs/CVPR2023_Poster.pdf" width="100%" height="900"></iframe>-->
+<!--    </div>-->
     <hr>
 </div>
-<!--<section class="hero is-small is-light">-->
-<!--<div class="hero-body">-->
-<!--<div class="container">-->
-<!--  <h2 class="title">Poster</h2>-->
-<!--  <iframe  src="static/pdfs/CVPR2023_Poster.pdf" width="100%" height="600"></iframe>-->
-<!--  </div>-->
-<!--</div>-->
-<!--</section>-->
 </body>
 </html>
