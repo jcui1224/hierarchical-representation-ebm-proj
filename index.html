@@ -1,183 +1,363 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Learning Hierarchical Features with Joint Latent Space Energy-Based Prior</title>
+
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <link rel="stylesheet" href="./static/css/bulma.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="./static/images/favicon.ico"/>
+
     <style>
+        :root {
+            --navy:   #0d1b2a;
+            --blue:   #1b4f72;
+            --accent: #2874a6;
+            --light:  #f4f6f9;
+            --border: #dce3ec;
+            --text:   #2c3e50;
+            --muted:  #6b7c93;
+        }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            background-color: #f5f5f5;
-            /*background-color: #C0C0C0;*/
+            font-family: 'Inter', 'Noto Sans', sans-serif;
+            color: var(--text);
+            background: #fff;
         }
 
-        a {
-            color: #4183C4;
+        .pub-hero {
+            background: linear-gradient(160deg, var(--navy) 0%, #1a2f4a 55%, var(--blue) 100%);
+            padding: 4rem 1.5rem 3rem;
+        }
+
+        .pub-hero .pub-title {
+            font-size: clamp(1.45rem, 3vw, 2.1rem);
+            font-weight: 700;
+            line-height: 1.35;
+            color: #fff;
+        }
+
+        .venue-badge {
+            display: inline-block;
+            background: #c0392b;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            padding: 3px 14px;
+            border-radius: 4px;
+            margin-bottom: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        .pub-authors {
+            color: rgba(255,255,255,0.85);
+            font-size: 1.05rem;
+            margin: 1.1rem 0 0.4rem;
+        }
+
+        .pub-authors a {
+            color: #7ec8e3;
             text-decoration: none;
+            transition: color .15s;
         }
 
-        p {
-            line-height: 20px;
+        .pub-authors a:hover {
+            color: #aee6f8;
+            text-decoration: underline;
         }
 
-        .content {
-            max-width: 1200px;
-            margin: auto;
+        .pub-inst {
+            color: rgba(255,255,255,0.55);
+            font-size: 0.95rem;
+            margin-bottom: 1.8rem;
         }
 
-        #abs {
-            text-align: center;
+        .pub-links .button {
+            margin: 4px 6px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: 1.5px solid rgba(255,255,255,0.35);
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            transition: background .2s, border-color .2s;
         }
 
-        #abs .descriptor {
-            display: none;
+        .pub-links .button:hover {
+            background: rgba(255,255,255,0.18);
+            border-color: rgba(255,255,255,0.6);
+            color: #fff;
         }
 
-        #abs h1.title {
-            margin: .5em 0 .5em 20px;
-            font-size: x-large;
-            font-weight: bold;
-            line-height: 120%;
+        .pub-section { padding: 3.5rem 1.5rem; }
+        .pub-section.alt { background: var(--light); }
+
+        .sec-title {
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--accent);
+            display: inline-block;
         }
 
-        #abs .authors {
-            margin: .5em 0 .5em 20px;
-            font-size: medium;
-            line-height: 150%;
-        }
-
-        #abs .authors a {
-            font-size: larger;
-        }
-
-        #abs p {
+        .abstract-text {
+            font-size: 1rem;
+            line-height: 1.9;
+            color: var(--text);
             text-align: justify;
+            hyphens: auto;
+            -webkit-hyphens: auto;
+            word-spacing: -0.01em;
         }
 
-        #links {
-            margin: 1.5em 0 1.5em 20px;
-            font-size: medium;
-            line-height: 150%;
-            /*padding:8px 0px;*/
+        .kw-pill {
+            display: inline-block;
+            background: #e8f0fb;
+            color: var(--accent);
+            border: 1px solid #c3d7f0;
+            border-radius: 20px;
+            padding: 2px 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin: 3px 2px;
         }
 
-        #links a {
-            font-size: x-large;
+        hr.sec-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 0;
         }
 
-        .bib {
-            font-size: large;
+        .bibtex-card {
+            background: linear-gradient(145deg, #1a212b 0%, #1e2733 55%, #202b38 100%);
+            border: 1px solid #344252;
+            border-radius: 12px;
+            box-shadow: 0 12px 28px rgba(8, 12, 18, 0.38);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .figure {
-            text-align: center;
+        .bibtex-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 32px rgba(8, 12, 18, 0.5);
+        }
+
+        .bibtex-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(90deg, #222d3a 0%, #253242 100%);
+            border-bottom: 1px solid #3a4a5d;
+            padding: 0.55rem 0.8rem;
+        }
+
+        .bibtex-title {
+            font-size: 0.82rem;
+            color: #c0cfdf;
+            letter-spacing: 0.04em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .bibtex-actions {
+            display: flex;
+            gap: 0.45rem;
+        }
+
+        .copy-bibtex-btn,
+        .toggle-bibtex-btn {
+            border: 1px solid #4b6178;
+            background: #2a3645;
+            color: #d4e1ee;
+            border-radius: 7px;
+            padding: 0.3rem 0.55rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .copy-bibtex-btn:hover,
+        .toggle-bibtex-btn:hover {
+            background: #324152;
+            border-color: #607b97;
+            box-shadow: 0 0 0 3px rgba(96, 123, 151, 0.22);
+        }
+
+        .copy-bibtex-btn.copied {
+            background: #eaf9ef;
+            border-color: #8dc4a0;
+            color: #23653a;
+        }
+
+        .bibtex-code {
+            margin: 0;
+            padding: 0 1.1rem;
+            background: linear-gradient(160deg, #171f29 0%, #1a2430 55%, #1e2a38 100%);
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.25s ease, padding 0.25s ease;
+        }
+
+        .bibtex-code.is-open {
+            padding: 1rem 1.1rem;
+            max-height: 560px;
+            overflow: auto;
+        }
+
+        .bibtex-code code {
+            font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #d3dee9;
+            white-space: pre;
+            display: block;
         }
     </style>
-    <link rel="stylesheet" href="./static/fonts/fontawesome/css/fontawesome.min.css"/>
-    <link rel="stylesheet" href="./static/fonts/fontawesome/css/brands.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="./static/fonts/fontawesome/css/solid.css" rel="stylesheet"/>
-    <!--&lt;!&ndash;    <link rel="stylesheet" href="./static/css/bulma.min.css" />&ndash;&gt;-->
-    <!--&lt;!&ndash;    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css" />&ndash;&gt;-->
-    <link rel="stylesheet" href="./static/css/bulma-slider.min.css"/>
-    <!--    <link rel="stylesheet" href="./static/css/fonts.css" />-->
-    <link rel="stylesheet" href="./static/css/academicons.min.css"/>
-    <link rel="stylesheet" href="./static/css/index.css"/>
-    <!--&lt;!&ndash;    <link rel="icon" href="./static/images/favicon.ico" />&ndash;&gt;-->
-
-    <script src="./static/js/jquery.min.js"></script>
-    <!--    <script src="./static/js/bulma-carousel.min.js"></script>-->
-    <!--    <script src="./static/js/bulma-slider.min.js"></script>-->
-    <!--    <script src="./static/js/index.js"></script>-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
 </head>
+
 <body>
 
-<div class="content">
-    <div id="abs">
-        <h1>Learning Hierarchical Features with Joint Latent Space Energy-Based Prior</h1>
-        <div class="authors"><a href="mailto:jcui7@stevens.edu">Jiali Cui</a><sup>1</sup>, <a
-                href="http://www.stat.ucla.edu/~ywu/">Ying Nian Wu</a><sup>2</sup>, <a href="https://thanacademic.github.io/">Tian
-            Han</a><sup>1</sup>,
-        </div>
-        <div class="inst">
-            <sup>1</sup> Stevens Institute of Technology, SIT<br>
-            <sup>2</sup> University of California, Los Angeles, UCLA<br>
+<section class="pub-hero">
+    <div class="container is-max-desktop has-text-centered">
+
+        <div><span class="venue-badge">ICCV 2023</span></div>
+
+        <h1 class="pub-title">Learning Hierarchical Features with Joint Latent Space Energy-Based Prior</h1>
+
+        <div class="pub-authors">
+            <span><a href="mailto:jcui7@stevens.edu">Jiali Cui</a><sup>1</sup></span>,&ensp;
+            <span><a href="http://www.stat.ucla.edu/~ywu/" target="_blank">Ying Nian Wu</a><sup>2</sup></span>,&ensp;
+            <span><a href="https://thanacademic.github.io/" target="_blank">Tian Han</a><sup>1</sup></span>
         </div>
 
-        <div id="links">
-            <!-- Arxiv PDF link -->
-            <span class="link-block", style="margin-right: 40px">
-                <a href="static/pdfs/ICCV_paper.pdf" target="_blank"
-                   class="external-link button is-normal is-rounded is-dark">
-                <span class="icon">
-                  <i class="fas fa-file-pdf"></i>
-                </span>
+        <div class="pub-inst">
+            <div><sup>1</sup>Stevens Institute of Technology, Hoboken, NJ</div>
+            <div><sup>2</sup>University of California, Los Angeles, CA</div>
+        </div>
+
+        <div class="pub-links">
+            <a href="static/pdfs/ICCV_paper.pdf" target="_blank" class="button">
+                <span class="icon"><i class="fas fa-file-pdf"></i></span>
                 <span>Paper</span>
-              </a>
-          </span>
-
-            <!-- Supplementary PDF link -->
-            <span class="link-block", style="margin-right: 40px">
-              <a href="static/pdfs/12058-supp.pdf" target="_blank"
-                 class="external-link button is-normal is-rounded is-dark">
-              <span class="icon">
-                <i class="fas fa-file-pdf"></i>
-              </span>
-              <span>Supplementary</span>
             </a>
-          </span>
-
-            <!-- Github link -->
-            <span class="link-block", style="margin-right: 40px">
-            <a href="https://github.com/jcui1224/hierarchical-representation-ebm" target="_blank"
-               class="external-link button is-normal is-rounded is-dark">
-            <span class="icon">
-              <i class="fab fa-github"></i>
-            </span>
-            <span>Code</span>
-          </a>
-        </span>
-
-            <!-- ArXiv abstract Link -->
-            <span class="link-block", style="margin-right: 40px">
-          <a href="https://arxiv.org/abs/2310.09604" target="_blank"
-             class="external-link button is-normal is-rounded is-dark">
-              <span class="icon">
-                <i class="fas fa-file-pdf"></i>
-              </span>
-          <span>ArXiv</span>
-        </a>
-      </span>
+            <a href="static/pdfs/12058-supp.pdf" target="_blank" class="button">
+                <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                <span>Supplementary</span>
+            </a>
+            <a href="https://github.com/jcui1224/hierarchical-representation-ebm" target="_blank" class="button">
+                <span class="icon"><i class="fab fa-github"></i></span>
+                <span>Code</span>
+            </a>
+            <a href="https://arxiv.org/abs/2310.09604" target="_blank" class="button">
+                <span class="icon"><i class="ai ai-arxiv"></i></span>
+                <span>ArXiv</span>
+            </a>
         </div>
 
-        <h2>Abstract</h2>
-        <p> This paper studies the fundamental problem of multi-layer generator models in learning hierarchical representations.
-            The multi-layer generator models that consist of multiple layers of latent variables organized in a top-down
-            architecture tend to learn multiple levels of data abstraction. However, such multi-layer latent variables are
-            typically parameterized to be Gaussian, which can be less informative in capturing complex abstractions,
-            resulting in limited success in hierarchical representation learning. In this paper, we propose to learn a
-            joint latent space EBM prior model for effective hierarchical representation learning. To ensure efficient
-            inference, we develop a variational joint training scheme where an inference model is seamlessly integrated
-            and jointly trained with the generator model. Our experiments demonstrate that the proposed joint EBM prior
-            is effective and expressive in capturing hierarchical representations and modelling complex data distribution.</p>
     </div>
-<!--    Comming Soon-->
-    <hr>
-    <pre class="bib">
-    @InProceedings{Cui_2023_Arch_JEBM,
-        author    = {Cui, Jiali and Wu, Ying Nian and Han, Tian},
-        title     = {Learning Hierarchical Features with Joint Latent Space Energy-Based Prior},
-        booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
-        month     = {October},
-        year      = {2023},
-        pages     = {2218-2227}
-    }
-    </pre>
-    <hr>
+</section>
 
-    <div class="container">
-        <h2 class="title">Poster</h2>
-        <iframe src="static/pdfs/ICCV2023_Poster.pdf" width="100%" height="650"></iframe>
+<hr class="sec-divider">
+
+<section class="pub-section">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered">
+            <div class="column is-10">
+                <h2 class="sec-title">Abstract</h2>
+                <p class="abstract-text">
+                    This paper studies the fundamental problem of multi-layer generator models in learning hierarchical representations.
+                    The multi-layer generator models that consist of multiple layers of latent variables organized in a top-down
+                    architecture tend to learn multiple levels of data abstraction. However, such multi-layer latent variables are
+                    typically parameterized to be Gaussian, which can be less informative in capturing complex abstractions,
+                    resulting in limited success in hierarchical representation learning. In this paper, we propose to learn a
+                    joint latent space EBM prior model for effective hierarchical representation learning. To ensure efficient
+                    inference, we develop a variational joint training scheme where an inference model is seamlessly integrated
+                    and jointly trained with the generator model. Our experiments demonstrate that the proposed joint EBM prior
+                    is effective and expressive in capturing hierarchical representations and modelling complex data distribution.
+                </p>
+
+                <div style="margin-top: 1.4rem;">
+                    <span class="kw-pill">Energy-Based Prior</span>
+                    <span class="kw-pill">Hierarchical Latent Variable</span>
+                </div>
+            </div>
+        </div>
     </div>
-    <hr>
-</div>
+</section>
+
+<hr class="sec-divider">
+
+<section class="pub-section alt">
+    <div class="container is-max-desktop">
+        <div class="columns is-centered">
+            <div class="column is-10">
+                <h2 class="sec-title">BibTeX</h2>
+                <div class="bibtex-card">
+                    <div class="bibtex-toolbar">
+                        <span class="bibtex-title">Citation Entry</span>
+                        <div class="bibtex-actions">
+                            <button id="toggleBibtexBtn" class="toggle-bibtex-btn" type="button" aria-expanded="false">Expand</button>
+                            <button id="copyBibtexBtn" class="copy-bibtex-btn" type="button">Copy</button>
+                        </div>
+                    </div>
+                    <pre id="bibtexBlock" class="bibtex-code"><code id="bibtexText">@InProceedings{Cui_2023_Arch_JEBM,
+    author    = {Cui, Jiali and Wu, Ying Nian and Han, Tian},
+    title     = {Learning Hierarchical Features with Joint Latent Space Energy-Based Prior},
+    booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+    month     = {October},
+    year      = {2023},
+    pages     = {2218-2227}
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script src="./static/js/jquery.min.js"></script>
+<script>
+    (function () {
+        var toggleBtn = document.getElementById('toggleBibtexBtn');
+        var bibtexBlock = document.getElementById('bibtexBlock');
+        var copyBtn = document.getElementById('copyBibtexBtn');
+        var bibtexText = document.getElementById('bibtexText');
+
+        if (toggleBtn && bibtexBlock) {
+            toggleBtn.addEventListener('click', function () {
+                var isOpen = bibtexBlock.classList.toggle('is-open');
+                toggleBtn.textContent = isOpen ? 'Collapse' : 'Expand';
+                toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+        }
+
+        if (copyBtn && bibtexText && navigator.clipboard) {
+            copyBtn.addEventListener('click', function () {
+                navigator.clipboard.writeText(bibtexText.textContent).then(function () {
+                    copyBtn.textContent = 'Copied';
+                    copyBtn.classList.add('copied');
+                    setTimeout(function () {
+                        copyBtn.textContent = 'Copy';
+                        copyBtn.classList.remove('copied');
+                    }, 1400);
+                });
+            });
+        }
+    })();
+</script>
+
 </body>
 </html>
